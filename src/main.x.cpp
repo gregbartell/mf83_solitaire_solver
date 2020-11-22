@@ -14,7 +14,9 @@ public:
     // Takes char of number or T/J/Q/K/A
     Card(char kind) : m_kind{kind}
     {
-        assert(m_kind == 'A' || (m_kind > '0' && m_kind <= '9') || m_kind == 'T' || m_kind == 'J' || m_kind == 'Q' || m_kind == 'K');
+        assert(m_kind == 'A' || (m_kind > '0' && m_kind <= '9') ||
+               m_kind == 'T' || m_kind == 'J' || m_kind == 'Q' ||
+               m_kind == 'K');
 
         // Store aces as 1, since they are always low
         if (m_kind == 'A') { m_kind = '1'; }
@@ -23,13 +25,12 @@ public:
     bool operator==(const Card& other) const { return m_kind == other.m_kind; }
     bool operator!=(const Card& other) const { return !(*this == other); }
 
-    unsigned int value() const {
-        if (m_kind > '0' && m_kind <= '9')
-        {
-            return m_kind - '0';
-        }
+    unsigned int value() const
+    {
+        if (m_kind > '0' && m_kind <= '9') { return m_kind - '0'; }
 
-        assert(m_kind == 'T' || m_kind == 'J' || m_kind == 'Q' || m_kind == 'K');
+        assert(m_kind == 'T' || m_kind == 'J' || m_kind == 'Q' ||
+               m_kind == 'K');
         return 10;
     }
 
@@ -42,22 +43,32 @@ private:
 class State
 {
 public:
-    State(std::array<std::deque<Card>, 4> piles, std::vector<Card> stack = {}, unsigned int score = 0) : m_scores{score}, m_stacks{std::move(stack)}, m_piles{std::move(piles)}
+    State(std::array<std::deque<Card>, 4> piles,
+          std::vector<Card> stack = {},
+          unsigned int score      = 0) :
+        m_scores{score},
+        m_stacks{std::move(stack)},
+        m_piles{std::move(piles)}
     {
     }
 
-    auto getScore() const { assert(m_scores.size() > 0); return m_scores.back(); }
+    auto getScore() const
+    {
+        assert(m_scores.size() > 0);
+        return m_scores.back();
+    }
 
-    const auto& getStack() const { assert(m_stacks.size() > 0); return m_stacks.back(); }
+    const auto& getStack() const
+    {
+        assert(m_stacks.size() > 0);
+        return m_stacks.back();
+    }
     const auto& getPiles() const { return m_piles; }
 
     unsigned int getStackVal() const
     {
         unsigned int ret = 0;
-        for (const auto& card : getStack())
-        {
-            ret += card.value();
-        }
+        for (const auto& card : getStack()) { ret += card.value(); }
 
         return ret;
     }
@@ -101,10 +112,7 @@ public:
 
         // Scoring conditions:
         // First card is a Jack - 2 points
-        if (stack.size() == 1 && card.kind() == 'J')
-        {
-            score += 2;
-        }
+        if (stack.size() == 1 && card.kind() == 'J') { score += 2; }
 
         // Stack total is exactly 15 - 2 points
         // Stack total is exactly 31 - 2 points (and clear stack)
@@ -117,49 +125,63 @@ public:
         size_t set_size = 0;
         for (auto rit = stack.rbegin(); rit != stack.rend(); rit++)
         {
-            if (rit->kind() != card.kind())
-            {
-                break;
-            }
+            if (rit->kind() != card.kind()) { break; }
 
             set_size++;
         }
 
         switch (set_size)
         {
-            case 1: break;
-            case 2: score += 2; break;
-            case 3: score += 6; break;
-            case 4: score += 12; break;
-            default: std::abort();
+            case 1:
+                break;
+            case 2:
+                score += 2;
+                break;
+            case 3:
+                score += 6;
+                break;
+            case 4:
+                score += 12;
+                break;
+            default:
+                std::abort();
         }
 
         // Runs of numbers, in any order - points equal to run length
-        for (size_t run_size = std::min(size_t{7}, stack.size()); run_size >= 3; run_size--)
+        for (size_t run_size = std::min(size_t{7}, stack.size()); run_size >= 3;
+             run_size--)
         {
             std::vector<unsigned int> run_set{};
-            for (auto rit = stack.rbegin(); static_cast<size_t>(rit - stack.rbegin()) < run_size; rit++)
+            for (auto rit = stack.rbegin();
+                 static_cast<size_t>(rit - stack.rbegin()) < run_size;
+                 rit++)
             {
-                if (rit->value() < 10)
-                {
-                    run_set.emplace_back(rit->value());
-                }
+                if (rit->value() < 10) { run_set.emplace_back(rit->value()); }
                 else
                 {
                     switch (rit->kind())
                     {
-                        case 'T': run_set.emplace_back(10); break;
-                        case 'J': run_set.emplace_back(11); break;
-                        case 'Q': run_set.emplace_back(12); break;
-                        case 'K': run_set.emplace_back(13); break;
-                        default: std::abort();
+                        case 'T':
+                            run_set.emplace_back(10);
+                            break;
+                        case 'J':
+                            run_set.emplace_back(11);
+                            break;
+                        case 'Q':
+                            run_set.emplace_back(12);
+                            break;
+                        case 'K':
+                            run_set.emplace_back(13);
+                            break;
+                        default:
+                            std::abort();
                     }
                 }
             }
 
             std::sort(run_set.begin(), run_set.end());
 
-            bool is_run = true;
+            bool is_run       = true;
             unsigned int prev = run_set.front();
             for (size_t i = 1; i < run_set.size(); i++)
             {
@@ -179,10 +201,7 @@ public:
             }
         }
 
-        if (getLegalMoves().empty())
-        {
-            stack.clear();
-        }
+        if (getLegalMoves().empty()) { stack.clear(); }
     }
 
     void undoMove()
@@ -191,7 +210,8 @@ public:
         assert(m_scores.size() > 1);
         // Should have had the same number of moves made
         assert(m_scores.size() == m_stacks.size());
-        // We'll have one more score than card because the initial state has no card moved yet
+        // We'll have one more score than card because the initial state has no
+        // card moved yet
         assert(m_scores.size() == m_cards.size() + 1);
 
         // Remove any points added by the last move
@@ -205,7 +225,8 @@ public:
     }
 
 private:
-    // Store these as queues of every game state, with more recent states at the back
+    // Store these as queues of every game state, with more recent states at the
+    // back
     std::deque<unsigned int> m_scores{};
     // Cards moved from a pile to a stack, and the pile idx
     std::deque<std::pair<Card, size_t>> m_cards{};
@@ -217,49 +238,42 @@ private:
 class TranspositionTable
 {
 public:
-    static void init()
+    TranspositionTable()
     {
-        assert(!s_inited);
-
         std::uniform_int_distribution<size_t> dist{};
         std::random_device rd{};
         std::default_random_engine gen{rd()};
 
-        for (auto& card_pos_hash : s_stack_hashes)
+        for (auto& card_pom_hash : m_stack_hashes)
         {
-            for (auto& card_kind_hash : card_pos_hash)
+            for (auto& card_kind_hash : card_pom_hash)
             {
                 card_kind_hash = dist(gen);
             }
         }
 
-        for (auto& card_pos_hash : s_pile_hashes)
+        for (auto& card_pom_hash : m_pile_hashes)
         {
-            for (auto& card_kind_hash : card_pos_hash)
+            for (auto& card_kind_hash : card_pom_hash)
             {
                 card_kind_hash = dist(gen);
             }
         }
-
-        s_inited = true;
     }
 
-    static void insert(const State& state, size_t best_move, unsigned int best_score)
+    void insert(const State& state, size_t best_move, unsigned int best_score)
     {
-        assert(s_inited);
-
         auto key = getKey(state);
-        s_map.emplace(key, std::make_pair(best_move, best_score - state.getScore()));
+        m_map.emplace(key,
+                      std::make_pair(best_move, best_score - state.getScore()));
     }
 
-    static std::pair<size_t, unsigned int> getVal(const State& state)
+    std::pair<size_t, unsigned int> getVal(const State& state) const
     {
-        assert(s_inited);
-
         auto key = getKey(state);
 
-        const auto search_ret = s_map.find(key);
-        if (search_ret == s_map.end())
+        const auto search_ret = m_map.find(key);
+        if (search_ret == m_map.end())
         {
             return {std::numeric_limits<size_t>::max(), 0};
         }
@@ -267,24 +281,19 @@ public:
         return search_ret->second;
     }
 
-    static void clear() { s_map.clear(); }
+    void clear() { m_map.clear(); }
 
 private:
-    static uint64_t getKey(const State& state)
+    uint64_t getKey(const State& state) const
     {
-        assert(s_inited);
-
         uint64_t key = 0;
 
         size_t card_idx = 0;
         for (const auto& card : state.getStack())
         {
-            key ^= s_stack_hashes[card_idx++][getCardKindIdx(card)];
+            key ^= m_stack_hashes[card_idx++][getCardKindIdx(card)];
         }
-        while (card_idx < 13)
-        {
-            key ^= s_stack_hashes[card_idx++][0];
-        }
+        while (card_idx < 13) { key ^= m_stack_hashes[card_idx++][0]; }
 
         const auto& piles = state.getPiles();
         for (size_t pile_idx = 0; pile_idx < 4; pile_idx++)
@@ -296,12 +305,12 @@ private:
             {
                 size_t card_kind_idx = getCardKindIdx(card);
 
-                key ^= s_pile_hashes[pile_idx*13 + card_idx++][card_kind_idx];
+                key ^= m_pile_hashes[pile_idx * 13 + card_idx++][card_kind_idx];
             }
 
             while (card_idx < 13)
             {
-                key ^= s_pile_hashes[pile_idx*13 + card_idx++][0];
+                key ^= m_pile_hashes[pile_idx * 13 + card_idx++][0];
             }
         }
 
@@ -312,29 +321,41 @@ private:
     {
         switch (card.kind())
         {
-            case '1': return 1;
-            case '2': return 2;
-            case '3': return 3;
-            case '4': return 4;
-            case '5': return 5;
-            case '6': return 6;
-            case '7': return 7;
-            case '8': return 8;
-            case '9': return 9;
-            case 'T': return 10;
-            case 'J': return 11;
-            case 'Q': return 12;
-            case 'K': return 13;
-            default: std::abort();
+            case '1':
+                return 1;
+            case '2':
+                return 2;
+            case '3':
+                return 3;
+            case '4':
+                return 4;
+            case '5':
+                return 5;
+            case '6':
+                return 6;
+            case '7':
+                return 7;
+            case '8':
+                return 8;
+            case '9':
+                return 9;
+            case 'T':
+                return 10;
+            case 'J':
+                return 11;
+            case 'Q':
+                return 12;
+            case 'K':
+                return 13;
+            default:
+                std::abort();
         }
     }
 
     // State key -> score
-    static inline std::unordered_map<uint64_t, std::pair<size_t, unsigned int>> s_map{};
-
-    static inline bool s_inited{false};
-    static inline std::array<std::array<uint64_t, 14>, 31> s_stack_hashes{};
-    static inline std::array<std::array<uint64_t, 14>, 52> s_pile_hashes{};
+    std::unordered_map<uint64_t, std::pair<size_t, unsigned int>> m_map{};
+    std::array<std::array<uint64_t, 14>, 31> m_stack_hashes{};
+    std::array<std::array<uint64_t, 14>, 52> m_pile_hashes{};
 };
 
 class Searcher
@@ -346,7 +367,7 @@ public:
     // Second = resultant score
     std::pair<size_t, unsigned int> getBestMove()
     {
-        if (auto ret = TranspositionTable::getVal(m_state); ret.second != 0)
+        if (auto ret = m_transpo_table.getVal(m_state); ret.second != 0)
         {
             return {ret.first, ret.second + m_state.getScore()};
         }
@@ -357,7 +378,7 @@ public:
             return {std::numeric_limits<size_t>::max(), m_state.getScore()};
         }
 
-        size_t best_move = std::numeric_limits<size_t>::max();
+        size_t best_move        = std::numeric_limits<size_t>::max();
         unsigned int best_score = 0;
         for (const auto& move : legal_moves)
         {
@@ -366,40 +387,55 @@ public:
             auto move_result = getBestMove();
             if (move_result.second > best_score)
             {
-                best_move = move;
+                best_move  = move;
                 best_score = move_result.second;
             }
 
             m_state.undoMove();
         }
 
-        TranspositionTable::insert(m_state, best_move, best_score);
+        m_transpo_table.insert(m_state, best_move, best_score);
 
         return {best_move, best_score};
     }
 
 private:
     State m_state;
+    TranspositionTable m_transpo_table{};
 };
 
 int main()
 {
-    TranspositionTable::init();
-
-    // This is where you'd put in your game state, with the first card in each pile being on top
-    // The stack, if you want to start from something other than the initial position, is the
-    // other way around, with the top card being at the end of the deque. I know that doesn't
-    // make a whole lot of sense, but this isn't a super serious project
+    // This is where you'd put in your game state, with the first card in each
+    // pile being on top The stack, if you want to start from something other
+    // than the initial position, is the other way around, with the top card
+    // being at the end of the deque. I know that doesn't make a whole lot of
+    // sense, but this isn't a super serious project
     /* State game_state{std::array<std::deque<Card>, 4>{std::deque<Card> */
     /*     {'A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K'}, */
     /*     {'A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K'}, */
     /*     {'A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K'}, */
-    /*     {'A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K'}}}; */
-    State game_state{std::array<std::deque<Card>, 4>{std::deque<Card>
-        {'J', '6', '9', 'T', '2', '3', 'Q', '8', '6', 'Q', 'J', '5', '2'},
-        {'7', 'A', 'K', 'T', 'Q', '7', '4', '6', '4', '9', '8', '5', '5'},
-        {'3', '8', 'A', 'Q', 'J', '3', 'K', '2', 'T', '2', '7', '8', 'K'},
-        {'K', '5', '3', 'J', '9', 'A', '7', '4', 'A', '6', '4', 'T', '9'}},};
+    /*     {'A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K'}}};
+     */
+    State game_state{
+        std::array<std::deque<Card>, 4>{
+            std::deque<Card>{'J',
+                             '6',
+                             '9',
+                             'T',
+                             '2',
+                             '3',
+                             'Q',
+                             '8',
+                             '6',
+                             'Q',
+                             'J',
+                             '5',
+                             '2'},
+            {'7', 'A', 'K', 'T', 'Q', '7', '4', '6', '4', '9', '8', '5', '5'},
+            {'3', '8', 'A', 'Q', 'J', '3', 'K', '2', 'T', '2', '7', '8', 'K'},
+            {'K', '5', '3', 'J', '9', 'A', '7', '4', 'A', '6', '4', 'T', '9'}},
+    };
 
     while (!game_state.getLegalMoves().empty())
     {
@@ -408,7 +444,9 @@ int main()
         const auto& [best_move, best_score] = searcher.getBestMove();
         game_state.makeMove(best_move);
 
-        std::cout << "Best move: " << best_move << ", resultant score: " << game_state.getScore() << std::endl;
+        std::cout << "Best move: " << best_move
+                  << ", resultant score: " << game_state.getScore()
+                  << std::endl;
         if (game_state.getStack().empty())
         {
             std::cout << "--- New stack ---" << std::endl;
