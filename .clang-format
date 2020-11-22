@@ -1,0 +1,105 @@
+﻿---
+AccessModifierOffset: '-4'
+AlignAfterOpenBracket: Align
+AlignConsecutiveAssignments: 'true'
+AlignConsecutiveDeclarations: 'false'
+AlignEscapedNewlines: Left
+AlignOperands: 'true'
+AlignTrailingComments: 'true'
+AllowAllArgumentsOnNextLine: 'false'
+AllowAllConstructorInitializersOnNextLine: 'false'
+AllowAllParametersOfDeclarationOnNextLine: 'false'
+AllowShortBlocksOnASingleLine: 'true'
+AllowShortCaseLabelsOnASingleLine: 'false'
+AllowShortFunctionsOnASingleLine: InlineOnly
+AllowShortIfStatementsOnASingleLine: WithoutElse
+AllowShortLambdasOnASingleLine: All
+AllowShortLoopsOnASingleLine: 'true'
+AlwaysBreakAfterReturnType: None
+AlwaysBreakBeforeMultilineStrings: 'false'
+AlwaysBreakTemplateDeclarations: 'Yes'
+BinPackArguments: 'false'
+BinPackParameters: 'false'
+BreakBeforeBinaryOperators: None
+BreakBeforeBraces: Custom
+BraceWrapping:
+    AfterCaseLabel: 'true'
+    AfterClass: 'true'
+    AfterControlStatement: Always
+    AfterEnum: 'true'
+    AfterFunction: 'true'
+    AfterNamespace: 'false'
+    AfterObjCDeclaration: 'false'
+    AfterStruct: 'true'
+    AfterUnion: 'true'
+    AfterExternBlock: 'false'
+    BeforeCatch: 'true'
+    BeforeElse: 'true'
+    IndentBraces: 'false'
+    SplitEmptyFunction: 'true'
+    SplitEmptyRecord: 'true'
+    SplitEmptyNamespace: 'true'
+BreakBeforeTernaryOperators: 'false'
+BreakConstructorInitializers: AfterColon
+BreakInheritanceList: AfterColon
+BreakStringLiterals: 'false'
+ColumnLimit: '80'
+CompactNamespaces: 'false'
+ConstructorInitializerAllOnOneLineOrOnePerLine: 'true'
+Cpp11BracedListStyle: 'true'
+DerivePointerAlignment: 'false'
+DisableFormat: 'false'
+FixNamespaceComments: 'true'
+IncludeBlocks: Regroup
+IncludeCategories:
+# 0 - Related header for .cpp/.t.cpp: #include "Foo.h"
+# Note: this header is assigned priority 0 by clang-format, not in this config
+# 1 - Other project includes: #include "foo/Foo.h"
+  - Regex:           '^".+"'
+    Priority:        1
+# 2 - System C includes: #include <unistd.h>
+  - Regex:           '^<[[:alnum:]]+.h>'
+    Priority:        2
+# 3 - System C++ includes: #include <vector>
+  - Regex:           '^<[[:alnum:]_]+>'
+    Priority:        3
+# 4 - Boost includes: #include <boost/iostreams/stream.hpp>
+  - Regex:           '^<boost/.*>'
+    Priority:        4
+# 5 - Gtest includes: #include <gtest/gtest.h>
+  - Regex:           '^<gtest/.*>'
+    Priority:        5
+# Have Foo.t.cpp find Foo.h as its related header for include sorting
+IncludeIsMainRegex: '(\.t)?$'
+IndentCaseLabels: 'true'
+IndentPPDirectives: BeforeHash
+IndentWidth: '4'
+IndentWrappedFunctionNames: 'false'
+KeepEmptyLinesAtTheStartOfBlocks: 'false'
+Language: Cpp
+MaxEmptyLinesToKeep: '2'
+NamespaceIndentation: None
+PointerAlignment: Left
+ReflowComments: 'true'
+SortIncludes: 'true'
+SortUsingDeclarations: 'true'
+SpaceAfterCStyleCast: 'true'
+SpaceAfterLogicalNot: 'false'
+SpaceAfterTemplateKeyword: 'true'
+SpaceBeforeAssignmentOperators: 'true'
+SpaceBeforeCpp11BracedList: 'false'
+SpaceBeforeCtorInitializerColon: 'true'
+SpaceBeforeInheritanceColon: 'true'
+SpaceBeforeParens: ControlStatements
+SpaceBeforeRangeBasedForLoopColon: 'true'
+SpaceInEmptyParentheses: 'false'
+SpacesBeforeTrailingComments: '2'
+SpacesInAngles: 'false'
+SpacesInCStyleCastParentheses: 'false'
+SpacesInContainerLiterals: 'false'
+SpacesInParentheses: 'false'
+SpacesInSquareBrackets: 'false'
+Standard: c++20
+UseTab: Never
+
+...

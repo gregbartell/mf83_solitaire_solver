@@ -1,0 +1,32 @@
+---
+Checks: '-*,bugprone-*,clang-analyzer-*,cppcoreguidelines-*,misc-*,performance-*,portability-*,readability-*,-cppcoreguidelines-avoid-goto,-cppcoreguidelines-owning-memory,-cppcoreguidelines-special-member-functions,-cppcoreguidelines-pro-bounds-array-to-pointer-decay,-cppcoreguidelines-pro-bounds-constant-array-index,-*-magic-numbers,-misc-no-recursion'
+# Explicitly disabled warnings:
+#
+# Related to googletest: https://github.com/google/googletest/issues/2442
+# cppcoreguidelines-avoid-goto
+# cppcoreguidelines-owning-memory
+# cppcoreguidelines-special-member-functions
+#
+# Has issues with assert()
+# cppcoreguidelines-pro-bounds-array-to-pointer-decay
+#
+# Games tend to have a lot of magic numbers
+# cppcoreguidelines-avoid-magic-numbers
+# readability-magic-numbers
+#
+# I just don't like this one
+# cppcoreguidelines-pro-bounds-constant-array-index
+#
+# The idea of not using recursion is silly to me
+# misc-no-recursion
+
+HeaderFilterRegex: 'src/*'
+
+CheckOptions:
+    # Allow implicit int->bool conversions as cctype functions (e.g. isalpha)
+    # return ints and "if (std::isalpha(val) != 0)" looks gross
+    - key:             readability-implicit-bool-conversion.AllowIntegerConditions
+      value:           '1'
+    - key:             misc-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic
+      value:           '1'
+...
