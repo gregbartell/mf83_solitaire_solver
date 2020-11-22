@@ -399,6 +399,12 @@ public:
         return {best_move, best_score};
     }
 
+    void makeMove(size_t pile_idx) { m_state.makeMove(pile_idx); }
+
+    auto getLegalMoves() const { return m_state.getLegalMoves(); }
+    const auto& getStack() const { return m_state.getStack(); }
+    auto getScore() const { return m_state.getScore(); }
+
 private:
     State m_state;
     TranspositionTable m_transpo_table{};
@@ -406,51 +412,43 @@ private:
 
 int main()
 {
-    // This is where you'd put in your game state, with the first card in each
-    // pile being on top The stack, if you want to start from something other
-    // than the initial position, is the other way around, with the top card
-    // being at the end of the deque. I know that doesn't make a whole lot of
-    // sense, but this isn't a super serious project
-    /* State game_state{std::array<std::deque<Card>, 4>{std::deque<Card> */
-    /*     {'A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K'}, */
-    /*     {'A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K'}, */
-    /*     {'A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K'}, */
-    /*     {'A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K'}}};
-     */
-    State game_state{
-        std::array<std::deque<Card>, 4>{
-            std::deque<Card>{'J',
-                             '6',
-                             '9',
-                             'T',
-                             '2',
-                             '3',
-                             'Q',
-                             '8',
-                             '6',
-                             'Q',
-                             'J',
-                             '5',
-                             '2'},
-            {'7', 'A', 'K', 'T', 'Q', '7', '4', '6', '4', '9', '8', '5', '5'},
-            {'3', '8', 'A', 'Q', 'J', '3', 'K', '2', 'T', '2', '7', '8', 'K'},
-            {'K', '5', '3', 'J', '9', 'A', '7', '4', 'A', '6', '4', 'T', '9'}},
-    };
-
-    while (!game_state.getLegalMoves().empty())
+    std::array<std::deque<Card>, 4> piles{};
+    for (size_t i = 0; i < 52; i++)
     {
-        Searcher searcher{game_state};
+        unsigned int val = 0;
+        std::cin >> val;
 
-        const auto& [best_move, best_score] = searcher.getBestMove();
-        game_state.makeMove(best_move);
-
-        std::cout << "Best move: " << best_move
-                  << ", resultant score: " << game_state.getScore()
-                  << std::endl;
-        if (game_state.getStack().empty())
+        if (val < 10) { piles[i / 13].emplace_front(val + '0'); }
+        else
         {
-            std::cout << "--- New stack ---" << std::endl;
+            switch (val)
+            {
+                case 10:
+                    piles[i / 13].emplace_front('T');
+                    break;
+                case 11:
+                    piles[i / 13].emplace_front('J');
+                    break;
+                case 12:
+                    piles[i / 13].emplace_front('Q');
+                    break;
+                case 13:
+                    piles[i / 13].emplace_front('K');
+                    break;
+                default:
+                    std::abort();
+            }
         }
+    }
+
+    Searcher searcher{piles};
+    while (!searcher.getLegalMoves().empty())
+    {
+        const auto& [best_move, best_score] = searcher.getBestMove();
+        searcher.makeMove(best_move);
+
+        std::cout << best_move << std::endl;
+        if (searcher.getStack().empty()) { std::cout << "-" << std::endl; }
     }
 
     return 0;
