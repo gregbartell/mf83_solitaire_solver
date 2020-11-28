@@ -293,7 +293,6 @@ private:
         {
             key ^= m_stack_hashes[card_idx++][getCardKindIdx(card)];
         }
-        while (card_idx < 13) { key ^= m_stack_hashes[card_idx++][0]; }
 
         const auto& piles = state.getPiles();
         for (size_t pile_idx = 0; pile_idx < 4; pile_idx++)
@@ -303,14 +302,8 @@ private:
             card_idx = 0;
             for (const auto& card : pile)
             {
-                size_t card_kind_idx = getCardKindIdx(card);
-
-                key ^= m_pile_hashes[pile_idx * 13 + card_idx++][card_kind_idx];
-            }
-
-            while (card_idx < 13)
-            {
-                key ^= m_pile_hashes[pile_idx * 13 + card_idx++][0];
+                key ^= m_pile_hashes[pile_idx * 13 + card_idx++]
+                                    [getCardKindIdx(card)];
             }
         }
 
@@ -423,6 +416,8 @@ int main()
         {
             switch (val)
             {
+                case 0:  // A sentinel value meaning the card isn't there
+                    continue;
                 case 10:
                     piles[i / 13].emplace_front('T');
                     break;
@@ -448,7 +443,10 @@ int main()
         searcher.makeMove(best_move);
 
         std::cout << best_move << std::endl;
-        if (searcher.getStack().empty()) { std::cout << "-" << std::endl; }
+        if (searcher.getStack().empty() && !searcher.getLegalMoves().empty())
+        {
+            std::cout << "-" << std::endl;
+        }
     }
 
     return 0;
