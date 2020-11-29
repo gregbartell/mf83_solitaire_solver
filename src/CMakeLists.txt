@@ -7,3 +7,12 @@ add_executable(mf83_main
 
 install(TARGETS mf83_main
     RUNTIME DESTINATION bin)
+
+add_executable(mf83_tests
+    Searcher.t.cpp
+    State.t.cpp
+    TranspoTable.t.cpp)
+target_link_libraries(mf83_tests
+    gtest
+    gtest_main)
+gtest_discover_tests(mf83_tests)
